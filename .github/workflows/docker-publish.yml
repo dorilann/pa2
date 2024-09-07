@@ -1,4 +1,4 @@
-name: CI/CD for Docker Images
+name: CI/CD for Docker Images with Health Check
 
 on:
   push:
@@ -10,31 +10,73 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code from GitHub repository
+      # Шаг 1: Клонирование репозитория
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Log in to DockerHub
+      # Шаг 2: Логин в DockerHub
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build and push weatherservice image
-      - name: Build and push weatherservice
+      # Шаг 3: Построение weatherservice
+      - name: Build weatherservice
         run: |
           docker build -t dorilann/weatherservicetest:latest ./WeatherServiceTest
+
+      # Шаг 4: Запуск weatherservice и проверка доступности через curl
+      - name: Run weatherservice and check health
+        run: |
+          docker run -d -p 8000:8080 --name weatherservice dorilann/weatherservicetest:latest
+          sleep 10  # Даем контейнеру время на старт
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8000/api/Health/HealthCheck; do
+            echo "Waiting for weatherservice to be ready..."
+            sleep 5
+          done
+
+      # Шаг 5: Пуш weatherservice
+      - name: Push weatherservice
+        run: |
           docker push dorilann/weatherservicetest:latest
 
-      # Build and push storageservice image
-      - name: Build and push storageservice
+      # Шаг 6: Построение storageservice
+      - name: Build storageservice
         run: |
           docker build -t dorilann/storageservice:latest ./StorageService
+
+      # Шаг 7: Запуск storageservice и проверка доступности через curl
+      - name: Run storageservice and check health
+        run: |
+          docker run -d -p 8001:8080 --name storageservice dorilann/storageservice:latest
+          sleep 10  # Даем контейнеру время на старт
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8001/api/Health/HealthCheck; do
+            echo "Waiting for storageservice to be ready..."
+            sleep 5
+          done
+
+      # Шаг 8: Пуш storageservice
+      - name: Push storageservice
+        run: |
           docker push dorilann/storageservice:latest
 
-      # Build and push apigateway image
-      - name: Build and push apigateway
+      # Шаг 9: Построение apigateway
+      - name: Build apigateway
         run: |
           docker build -t dorilann/apigateway:latest ./ApiGateway
+
+      # Шаг 10: Запуск apigateway и проверка доступности через curl
+      - name: Run apigateway and check health
+        run: |
+          docker run -d -p 8082:8080 --name apigateway dorilann/apigateway:latest
+          sleep 10  # Даем контейнеру время на старт
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8082/api/Health/HealthCheck; do
+            echo "Waiting for apigateway to be ready..."
+            sleep 5
+          done
+
+      # Шаг 11: Пуш apigateway
+      - name: Push apigateway
+        run: |
           docker push dorilann/apigateway:latest
