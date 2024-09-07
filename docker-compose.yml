@@ -16,9 +16,9 @@ services:
 
 
   weatherservice:
-    build: ./WeatherServiceTest
-    container_name: weatherservice
-    image: dorilann/weatherservicetest:latest
+    build: ./RiotService
+    container_name: riotservice
+    image: dorilann/riotservice:latest
     ports:
       - "8000:8080"
     networks:

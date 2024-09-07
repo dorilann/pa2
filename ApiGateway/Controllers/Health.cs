@@ -3,7 +3,7 @@
 namespace ApiGateway.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class Health : ControllerBase
     {
         [HttpGet("HealthCheck")]

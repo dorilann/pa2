@@ -18,5 +18,4 @@ RUN dotnet publish -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY champion.json /app/champion.json
-ENTRYPOINT ["dotnet", "StorageService.dll"]
+ENTRYPOINT ["dotnet", "RiotService.dll"]

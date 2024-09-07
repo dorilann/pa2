@@ -5,7 +5,7 @@ using StorageService.Models;
 namespace StorageService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class HistoryController : ControllerBase
     {
         private readonly IMongoCollection<WeatherRecord> _collection;
