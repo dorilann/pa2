@@ -28,6 +28,13 @@ namespace StorageService.Controllers
             var history = await _collection.Find(x => x.Timezone == "GMT").ToListAsync();
             return Ok(history);
         }
+
+        [HttpGet("{date}")]
+        public async Task<bool> IsDataForTime(string date)
+        {
+            var isDataForDate = await _collection.FindAsync(x => x.TempData.Time.Any(y => y == date.ToString()));
+            return await isDataForDate.AnyAsync();
+        }
     }
 
 }

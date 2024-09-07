@@ -17,10 +17,11 @@ namespace ApiGateway.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        [HttpGet("weather/{city}")]
-        public async Task<IActionResult> GetWeather(string city)
+        [HttpGet("weather/{city,date}")]
+        public async Task<IActionResult> GetWeather(string city,string date)
         {
             var client = _httpClientFactory.CreateClient();
+            var hasAnyData = await client.GetStringAsync($"http://storageservice/api/history/{date}");
             var response = await client.GetStringAsync($"http://weatherservice/api/weather/{city}");
             return Ok(response);
         }

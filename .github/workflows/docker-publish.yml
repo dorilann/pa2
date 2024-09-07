@@ -1,0 +1,40 @@
+name: CI/CD for Docker Images
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code from GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Log in to DockerHub
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build and push weatherservice image
+      - name: Build and push weatherservice
+        run: |
+          docker build -t dorilann/weatherservicetest:latest ./WeatherServiceTest
+          docker push dorilann/weatherservicetest:latest
+
+      # Build and push storageservice image
+      - name: Build and push storageservice
+        run: |
+          docker build -t dorilann/storageservice:latest ./StorageService
+          docker push dorilann/storageservice:latest
+
+      # Build and push apigateway image
+      - name: Build and push apigateway
+        run: |
+          docker build -t dorilann/apigateway:latest ./ApiGateway
+          docker push dorilann/apigateway:latest

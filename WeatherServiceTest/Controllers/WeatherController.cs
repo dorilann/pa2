@@ -19,8 +19,14 @@ namespace WeatherServiceTest.Controllers
         public async Task<IActionResult> GetWeather()
         {
             var client = _httpClientFactory.CreateClient();
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+            var httpClient = new HttpClient(handler);
+
             var url = $"https://api.open-meteo.com/v1/forecast?latitude=47.0056&longitude=28.8575&hourly=temperature_2m,wind_speed_80m";
-            var response = await client.GetStringAsync(url);
+            var response = await httpClient.GetStringAsync(url);
             return Ok(response);
         }
     }

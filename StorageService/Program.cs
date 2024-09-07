@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IMongoClient, MongoClient>(sp =>
 {
-    var connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING");
+    var connectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")
+            ?? builder.Configuration.GetConnectionString("MongoDb");
     return new MongoClient(connectionString);
 });
 
