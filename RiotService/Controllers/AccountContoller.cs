@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,6 +11,7 @@ using System;
 namespace RiotService.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {

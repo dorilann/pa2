@@ -1,4 +1,5 @@
 using ApiGateway.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
@@ -20,31 +21,27 @@ namespace ApiGateway.Controllers
             _logger = logger;
             _httpClientFactory = httpClientFactory;
         }
+
+        [Authorize]
         [HttpGet("account/{region}/{server}/{gameName}/{tag}")]
         public async Task<IActionResult> GetProfile(string region, string server, string gameName, string tag)
         {
             try
             {
-                // Log the start of request processing
-                _logger.LogInformation("Starting request processing for {GameName}/{Tag} in region {Region}/{Server}", gameName, tag, region, server);
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
 
                 var client = _httpClientFactory.CreateClient();
 
-                // Request to storageservice to retrieve profile data
-                _logger.LogInformation("Sending request to storageservice to retrieve profile data...");
+                client.DefaultRequestHeaders.Add("Authorization", token);
+
                 var data = await client.GetStringAsync($"http://storageservice:8080/Champion/GetProfileData/{gameName}/{tag}");
 
                 if (string.IsNullOrEmpty(data))
                 {
-                    // If data is not found in storageservice, request it from riotservice
-                    _logger.LogInformation("Data not found in storageservice. Requesting from riotservice...");
 
                     data = await client.GetStringAsync($"http://riotservice:8080/Account/{region}/{server}/{gameName}/{tag}");
-                    _logger.LogInformation("Data received from riotservice: {Data}", data);
 
-                    // Prepare data for storage and send it to storageservice for insertion
                     var content = new StringContent(data, Encoding.UTF8, "application/json");
-                    _logger.LogInformation("Sending data to storageservice for insertion...");
                     await client.PostAsync("http://storageservice:8080/Champion/InsertProfileData", content);
                 }
 
@@ -62,6 +59,58 @@ namespace ApiGateway.Controllers
             }
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel login)
+        {
+            var client = _httpClientFactory.CreateClient();
 
+            var content = new StringContent(JsonConvert.SerializeObject(login), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("http://authorizationservice:8080/api/Auth/login", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var token = await response.Content.ReadAsStringAsync();
+                return Ok(new { token });
+            }
+
+            return BadRequest("Invalid login credentials.");
+
+
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterModel register)
+        {
+            var client = _httpClientFactory.CreateClient();
+
+            var content = new StringContent(JsonConvert.SerializeObject(register), Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("http://authorizationservice:8080/api/Auth/register", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok("User registered successfully.");
+            }
+
+            return BadRequest("Registration failed.");
+
+        }
+
+
+
+
+        public class LoginModel
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
+        }
+
+        public class RegisterModel
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public string ConfPassword { get; set; }
+        }
     }
 }

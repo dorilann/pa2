@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RiotService.Models.Account;
 using RiotService.Models.ChampionMastery;
@@ -7,6 +8,7 @@ using RiotService.Models.NewFolder;
 namespace RiotService.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class SummonerController : ControllerBase
     {

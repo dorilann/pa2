@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
 using StorageService.Models.Account;
@@ -7,6 +8,7 @@ using StorageService.Models.Champions;
 namespace StorageService.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class ChampionController : ControllerBase
     {
