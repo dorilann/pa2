@@ -71,10 +71,10 @@ jobs:
         run: |
           docker push dorilann/apigateway:latest
 
-          - name: Build frontend
-          run: |
-            docker build -t dorilann/frontend:latest ./frontend
-            
+      - name: Build frontend
+        run: |
+          docker build -t dorilann/frontend:latest ./frontend
+
       - name: Run frontend and check health
         run: |
           docker run -d -p 3000:3000 --name frontend dorilann/frontend:latest
