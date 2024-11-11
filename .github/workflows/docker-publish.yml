@@ -29,7 +29,7 @@ jobs:
           docker run -d -p 8000:8080 --name riotservice dorilann/riotservice:latest
           sleep 10  
           until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8000/Health/HealthCheck; do
-            echo "Waiting for weatherservice to be ready..."
+            echo "Waiting for riotservice to be ready..."
             sleep 5
           done
 
@@ -60,9 +60,9 @@ jobs:
 
       - name: Run apigateway and check health
         run: |
-          docker run -d -p 8082:8080 --name apigateway dorilann/apigateway:latest
+          docker run -d -p 8002:8080 --name apigateway dorilann/apigateway:latest
           sleep 10 
-          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8082/Health/HealthCheck; do
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8002/Health/HealthCheck; do
             echo "Waiting for apigateway to be ready..."
             sleep 5
           done
@@ -70,3 +70,20 @@ jobs:
       - name: Push apigateway
         run: |
           docker push dorilann/apigateway:latest
+
+          - name: Build frontend
+          run: |
+            docker build -t dorilann/frontend:latest ./frontend
+            
+      - name: Run frontend and check health
+        run: |
+          docker run -d -p 3000:3000 --name frontend dorilann/frontend:latest
+          sleep 10 
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:3000; do
+            echo "Waiting for frontend to be ready..."
+            sleep 5
+          done
+
+      - name: Push frontend
+        run: |
+          docker push dorilann/frontend:latest  
