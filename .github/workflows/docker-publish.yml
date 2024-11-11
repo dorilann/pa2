@@ -87,3 +87,20 @@ jobs:
       - name: Push frontend
         run: |
           docker push dorilann/frontend:latest  
+
+      - name: Build authorizationservice
+        run: |
+          docker build -t dorilann/authorizationservice:latest ./AuthorizationService
+
+      - name: Run authorizationservice and check health
+        run: |
+          docker run -d -p 8003:8080 --name authorizationservice dorilann/authorizationservice:latest
+          sleep 10 
+          until curl --retry 5 --retry-connrefused --retry-delay 5 --fail http://localhost:8003/Health/HealthCheck; do
+            echo "Waiting for authorizationservice to be ready..."
+            sleep 5
+          done
+
+      - name: Push authorizationservice
+        run: |
+          docker push dorilann/authorizationservice:latest
