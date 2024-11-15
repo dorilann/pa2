@@ -9,8 +9,8 @@ using System.Text;
 namespace ApiGateway.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class ApiGatewayController : ControllerBase
+	[Route("")]
+	public class ApiGatewayController : ControllerBase
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -79,28 +79,34 @@ namespace ApiGateway.Controllers
 
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel register)
-        {
-            var client = _httpClientFactory.CreateClient();
+		[HttpPost("register")]
+		public async Task<IActionResult> Register([FromBody] RegisterModel register)
+		{
+			var client = _httpClientFactory.CreateClient();
+			var content = new StringContent(JsonConvert.SerializeObject(register), Encoding.UTF8, "application/json");
 
-            var content = new StringContent(JsonConvert.SerializeObject(register), Encoding.UTF8, "application/json");
+			try
+			{
+				var response = await client.PostAsync("http://authorizationservice:8080/api/Auth/register", content);
 
-            var response = await client.PostAsync("http://authorizationservice:8080/api/Auth/register", content);
+				if (response.IsSuccessStatusCode)
+				{
+					var result = await response.Content.ReadAsStringAsync();
+					return Ok(new { message = "Registration successful", data = result });
+				}
 
-            if (response.IsSuccessStatusCode)
-            {
-                return Ok("User registered successfully.");
-            }
-
-            return BadRequest("Registration failed.");
-
-        }
-
-
+				var errorContent = await response.Content.ReadAsStringAsync();
+				return BadRequest(new { message = "Error from AuthorizationService", details = errorContent });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Internal server error", error = ex.Message });
+			}
+		}
 
 
-        public class LoginModel
+
+		public class LoginModel
         {
             public string Username { get; set; }
             public string Password { get; set; }
