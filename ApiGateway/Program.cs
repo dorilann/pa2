@@ -37,8 +37,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
         builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
+			 .WithOrigins("http://localhost:3000") // React URL
+			.AllowAnyMethod()
             .AllowAnyHeader());
 });
 
@@ -51,7 +51,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+
+// Use CORS policy
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
