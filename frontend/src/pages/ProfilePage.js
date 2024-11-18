@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import MasteryCard from '../components/MasteryCard';
+import VictoryChart from '../components/VictoryChart';
 import '../styles/ProfilePage.css';
 import { fetchProfileData } from '../services/getUsersService';
 
@@ -66,16 +67,26 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      <div className="victory-chart">
+        <VictoryChart wins={account.wins} losses={account.losses} />
+      </div>
+
       <div className="champions-section">
-        <h2>Мастерство </h2>
+        <h2>Мастерство</h2>
         <div className="champions-list">
           {masteries.map((champion) => (
             <MasteryCard
               key={champion.championId}
               champion={{
+                puuId: champion.puuId,
+                championId: champion.championId,
                 name: `Champion ID: ${champion.championId}`, // Имя чемпиона не указано в данных, поэтому отображаем ID
                 level: champion.championLevel,
                 points: champion.championPoints,
+                pointsUntilNextLevel: champion.championPointsUntilNextLevel,
+                chestGranted: champion.chestGranted,
+                lastPlayTime: new Date(champion.lastPlayTime).toLocaleDateString(),
+                imageUrl: `https://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${champion.championId}.png`, // Пример URL для изображения чемпиона
               }}
             />
           ))}

@@ -39,3 +39,9 @@
     margin: 5px 0;
   }
   
+  .victory-chart {
+    margin: 20px auto;
+    width: 80%;
+    max-width: 600px;
+  }
+  
