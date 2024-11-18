@@ -80,13 +80,13 @@ const ProfilePage = () => {
               champion={{
                 puuId: champion.puuId,
                 championId: champion.championId,
-                name: `Champion ID: ${champion.championId}`, // Имя чемпиона не указано в данных, поэтому отображаем ID
+                name: `${champion.championNameId}`, // Имя чемпиона не указано в данных, поэтому отображаем ID
                 level: champion.championLevel,
                 points: champion.championPoints,
                 pointsUntilNextLevel: champion.championPointsUntilNextLevel,
                 chestGranted: champion.chestGranted,
                 lastPlayTime: new Date(champion.lastPlayTime).toLocaleDateString(),
-                imageUrl: `https://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${champion.championId}.png`, // Пример URL для изображения чемпиона
+                imageUrl: `https://ddragon.leagueoflegends.com/cdn/12.23.1/img/champion/${champion.championName}.png`, // Пример URL для изображения чемпиона
               }}
             />
           ))}

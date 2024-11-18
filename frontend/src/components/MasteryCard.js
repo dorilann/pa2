@@ -18,7 +18,6 @@ const MasteryCard = ({ champion }) => {
     <div className="mastery-card">
       <img src={imageUrl} alt={name} className="champion-image" />
       <h3>{name}</h3>
-      <p><strong>PUUID:</strong> {puuId}</p>
       <p><strong>Level:</strong> {level}</p>
       <p><strong>Points:</strong> {points}</p>
       <p><strong>Points Until Next Level:</strong> {pointsUntilNextLevel}</p>

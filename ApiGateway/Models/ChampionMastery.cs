@@ -9,5 +9,7 @@
         public long LastPlayTime { get; set; }
         public int ChampionLevel { get; set; }
         public int ChampionPoints { get; set; }
+        public string ChampionName { get; set; }
+        public string ChampionNameId { get; set; }
     }
 }

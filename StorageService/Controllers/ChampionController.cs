@@ -69,6 +69,14 @@ namespace StorageService.Controllers
         public async Task<IActionResult> GetProfileData(string gameName, string tag)
         {
             var person = await _profileCollection.Find(x => x.Account.GameName == gameName && x.Account.TagLine == tag).FirstOrDefaultAsync();
+            if (person != null)
+            {
+                foreach (var mastery in person.Masteries)
+                {
+                    mastery.ChampionName = _championCollection.Find(x => x.Key == mastery.ChampionId).FirstOrDefault().Id;
+                    mastery.ChampionNameId = _championCollection.Find(x => x.Key == mastery.ChampionId).FirstOrDefault().Name;
+			    }
+            }
             return Ok(person);
         }
 
