@@ -11,7 +11,6 @@ using System;
 namespace RiotService.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
